@@ -129,11 +129,12 @@ export default function ChatBot() {
         key={i}
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`p-2 rounded-lg ${
-          msg.sender === "user"
-            ? "bg-black text-white ml-auto max-w-[80%]"
-            : "bg-gray-200 text-black mr-auto max-w-[80%]"
-        }`}
+       className={`px-3 py-2 rounded-lg w-fit max-w-[75%] break-words 
+  ${msg.sender === "user" 
+    ? "bg-black text-white ml-auto" 
+    : "bg-gray-200 text-black mr-auto"
+  }`}
+
       >
         {msg.text}
       </motion.div>
