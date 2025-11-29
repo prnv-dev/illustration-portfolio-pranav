@@ -118,22 +118,22 @@ export default function ChatBot() {
           {/* 💬 Messages + Input */}
 <div className="relative flex flex-col h-full overflow-hidden">
   {/* Messages Scrollable Area */}
-  <div
-    ref={chatRef}
-    className="flex-1 overflow-y-auto p-2 pb-[70px] space-y-2 text-sm 
-               scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 scroll-smooth"
-    style={{ minHeight: "0px" }} // 🧠 prevents flexbox auto-grow
-  >
+ <div
+  ref={chatRef}
+  className="flex-1 overflow-y-auto p-2 pb-[70px] space-y-2 text-sm 
+             flex flex-col"
+>
+
     {messages.map((msg, i) => (
       <motion.div
         key={i}
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
-       className={`px-3 py-2 rounded-lg w-fit max-w-[75%] break-words 
-  ${msg.sender === "user" 
-    ? "bg-black text-white ml-auto" 
-    : "bg-gray-200 text-black mr-auto"
-  }`}
+    className={`px-3 py-2 rounded-xl inline-block max-w-[80%] break-words ${
+  msg.sender === "user"
+    ? "bg-black text-white self-end"
+    : "bg-gray-200 text-black self-start"
+}`}
 
       >
         {msg.text}
