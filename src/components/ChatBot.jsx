@@ -12,19 +12,22 @@ export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
   const chatRef = useRef(null);
 
-  // 🟢 Auto welcome message when chat opens
+  // 🟢 Prevent duplicate messages
+  const isReplying = useRef(false);
+
+  // 🟢 Auto Welcome message only once
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       setMessages([
         {
           sender: "bot",
-          text: "Hello! I’m Rio — Pranav’s AI assistant 🤖. How can I help you today?",
+          text: "👋 Hey! I’m Rio — Pranav’s AI Assistant. How can I help you today?",
         },
       ]);
     }
   }, [isOpen]);
 
-  // 🔄 Auto-scroll to bottom
+  // 🔄 Auto scroll
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTo({
@@ -34,136 +37,175 @@ export default function ChatBot() {
     }
   }, [messages, loading]);
 
-  // ✉️ Send message
+  // ✉️ Send message function
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isReplying.current) return;
 
-    const userMsg = { sender: "user", text: input };
-    setMessages((prev) => [...prev, userMsg]);
+    const text = input;
     setInput("");
+
+    // Add user message
+    setMessages((prev) => [...prev, { sender: "user", text }]);
+
     setLoading(true);
+    isReplying.current = true;
 
     try {
-      const reply = await askAI(input);
-      setMessages((prev) => [...prev, { sender: "bot", text: reply }]);
-    } catch (err) {
-      console.error("Rio Error:", err);
+      const reply = await askAI(text);
+
       setMessages((prev) => [
         ...prev,
-        { sender: "bot", text: "⚠️ Oops! Rio couldn’t respond right now 😅" },
+        { sender: "bot", text: reply || "⚠️ Rio couldn't respond." },
+      ]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: "⚠️ Oops! Something went wrong." },
       ]);
     }
 
     setLoading(false);
+    isReplying.current = false;
   };
+
+  // Typing dots animation component
+  const TypingDots = () => (
+    <div className="flex gap-1 mt-1 ml-1">
+      <span className="w-2 h-2 bg-gray-500 rounded-full animate-pulse"></span>
+      <span className="w-2 h-2 bg-gray-500 rounded-full animate-pulse delay-150"></span>
+      <span className="w-2 h-2 bg-gray-500 rounded-full animate-pulse delay-300"></span>
+    </div>
+  );
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      {/* 🔘 Floating Icon */}
-      <AnimatePresence mode="wait">
+      {/* Floating Icon */}
+      <AnimatePresence>
         {!isOpen && (
           <motion.div
             key="icon"
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            initial={{ opacity: 0, scale: 0.5, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
             className="cursor-pointer"
             onClick={() => setIsOpen(true)}
           >
             <img
               src="/assets/chatbot.png"
-              alt="Chatbot Icon"
-              className="w-14 h-14 drop-shadow-lg"
+              className="w-14 h-14 drop-shadow-xl hover:scale-110 transition"
             />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* 💬 Chat Window */}
-      <AnimatePresence mode="wait">
+      {/* FULL CHAT WINDOW */}
+      <AnimatePresence>
         {isOpen && (
-<motion.div
-  key="chat"
-  initial={{ opacity: 0, y: 40 }}
+          <motion.div
+            key="chat"
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 30 }}
+            transition={{ duration: 0.3 }}
+            className="backdrop-blur-xl bg-white/70 border border-white/40 shadow-2xl rounded-2xl
+                       w-[75vw] sm:w-[270px] max-w-[270px]
+                       h-[52vh] sm:h-[340px]
+                       fixed bottom-4 right-4 sm:bottom-6 sm:right-6
+                       overflow-hidden flex flex-col"
+          >
+
+            {/* HEADER */}
+            <div className="px-3 py-2 flex items-center justify-between bg-white/40 backdrop-blur-md border-b border-white/40">
+              <div className="flex items-center gap-2">
+                <motion.img
+                  src="/assets/chatbot.png"
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 3 }}
+                  className="w-7 h-7 rounded-full shadow-md"
+                />
+                <span className="text-[13px] font-semibold text-gray-900 tracking-wide">
+                  Rio — AI Assistant
+                </span>
+              </div>
+
+              <button
+                className="text-gray-700 hover:text-black font-bold"
+                onClick={() => setIsOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* MESSAGE AREA */}
+            <div
+              ref={chatRef}
+             className="flex-1 overflow-y-auto p-2 pb-[70px] space-y-3 text-sm 
+           flex flex-col items-start"
+
+            >
+              {messages.map((msg, i) => (
+             <motion.div
+  key={i}
+  initial={{ opacity: 0, y: 4 }}
   animate={{ opacity: 1, y: 0 }}
-  exit={{ opacity: 0, y: 40 }}
-  transition={{ duration: 0.3, ease: "easeInOut" }}
-  className="bg-white shadow-xl rounded-2xl border border-gray-300
-             w-[72vw] sm:w-[260px] max-w-[260px]
-             h-[48vh] sm:h-[330px]             /* ✅ mobile ke liye bada, desktop chhota */
-             overflow-hidden fixed bottom-4 right-3 sm:bottom-6 sm:right-6
-             z-50 flex flex-col"
+  className={`
+    relative px-3 py-2 rounded-2xl text-sm leading-snug
+    max-w-[80%] w-fit break-words shadow-sm
+
+    ${msg.sender === "user"
+      ? "bg-black text-white self-end mr-1"
+      : "bg-white text-gray-900 border border-gray-300 self-start ml-1"}
+  `}
 >
+  {msg.text}
+
+  {/* FIXED ARROW — no movement */}
+  {msg.sender === "user" ? (
+    <span className="
+      absolute right-[-6px] top-[14px]
+      w-3 h-3 bg-black rotate-45
+    " />
+  ) : (
+    <span className="
+      absolute left-[-6px] top-[14px]
+      w-3 h-3 bg-white border-l border-t border-gray-300 rotate-45
+    " />
+  )}
+</motion.div>
 
 
-<div className="flex items-center justify-between bg-black text-white px-3 py-2 font-semibold border-b border-gray-700 shadow-sm">
-  <div className="flex items-center gap-2">
-    <img
-      src="/assets/chatbot.png"
-      alt="Rio"
-      className="w-6 h-6 rounded-full"
-    />
-    <span className="text-[13px] tracking-wide">Rio — Pranav’s AI Assistant</span>
-  </div>
-  <button
-    className="text-white hover:text-gray-400 transition text-sm"
-    onClick={() => setIsOpen(false)}
-  >
-    ✕
-  </button>
-</div>
+              ))}
 
+              {/* Typing animation */}
+              {loading && (
+                <div className="self-start bg-white p-2 rounded-xl border shadow-sm max-w-[40%]">
+                  <TypingDots />
+                </div>
+              )}
+            </div>
 
-          {/* 💬 Messages + Input */}
-<div className="relative flex flex-col h-full overflow-hidden">
-  {/* Messages Scrollable Area */}
- <div
-  ref={chatRef}
-  className="flex-1 overflow-y-auto p-2 pb-[70px] space-y-2 text-sm 
-             flex flex-col"
->
+            {/* INPUT BAR */}
+            <div className="p-2 border-t border-white/40 bg-white/60 backdrop-blur-md flex items-center gap-2">
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                placeholder="Ask Rio anything..."
+                className="flex-1 p-2 text-sm bg-transparent outline-none text-gray-800"
+              />
 
-    {messages.map((msg, i) => (
-      <motion.div
-        key={i}
-        initial={{ opacity: 0, y: 5 }}
-        animate={{ opacity: 1, y: 0 }}
-    className={`px-3 py-2 rounded-xl inline-block max-w-[80%] break-words ${
-  msg.sender === "user"
-    ? "bg-black text-white self-end"
-    : "bg-gray-200 text-black self-start"
-}`}
+              <button
+                onClick={sendMessage}
+                className="bg-black text-white px-3 py-2 rounded-xl text-sm hover:opacity-90 active:scale-95 transition"
+              >
+                Send
+              </button>
+            </div>
 
-      >
-        {msg.text}
-      </motion.div>
-    ))}
-
-    {loading && (
-      <p className="text-center text-gray-500 italic">Rio is typing...</p>
-    )}
-
-    {/* Spacer ensures scroll bottom */}
-    <div className="h-4"></div>
-  </div>
-
-  {/* Input Bar (fixed bottom inside) */}
-  <div className="absolute bottom-0 left-0 w-full border-t border-gray-300 bg-white p-2 flex items-center">
-    <input
-      type="text"
-      value={input}
-      onChange={(e) => setInput(e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-      placeholder="Ask Rio anything..."
-      className="flex-1 text-sm p-2 outline-none bg-transparent"
-    />
-    <button
-      onClick={sendMessage}
-      className="bg-black text-white px-3 py-2 rounded-lg text-sm font-semibold active:scale-95 transition-transform"
-    >
-      Send
-    </button>
-  </div>
-</div>
-</motion.div> )} </AnimatePresence> </div> ); }
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

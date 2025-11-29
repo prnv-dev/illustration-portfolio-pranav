@@ -147,12 +147,12 @@ export default function Contact() {
             <motion.a
               whileHover={{ x: 5 }}
               className="flex items-center gap-2 group"
-              href="tel:+91 9309818332"
+              href="tel:+91"
             >
               <span className="border-2 transition-all border-transparent group-hover:border-black rounded-full p-[5px]">
                 <FaPhone className="w-3 h-3 lg:w-4 lg:h-4" />
               </span>
-              CALL MT KR EMAIL KRDE 
+              sorry , can't share
             </motion.a>
           </div>
         </motion.div>
