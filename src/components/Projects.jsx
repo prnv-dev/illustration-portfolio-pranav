@@ -36,6 +36,34 @@ export default function Projects() {
         My <span className="font-extrabold">Projects</span>
       </h2>
 
+
+<div className="bg-black/10 border border-white/10 rounded-xl p-4 my-6 text-sm backdrop-blur-md">
+  <p className="text-white/80 leading-relaxed">
+    <strong className="text-white">📌 Important Note — Please Read</strong><br /><br />
+    The projects shown here are just <strong>lightweight demo samples</strong> of my work.
+    My real advanced projects — including security tools, automation systems, reverse-engineering
+    utilities, AI integrations, custom bypass frameworks, and internal applications — are
+    <strong>private for security reasons</strong>.
+    <br /><br />
+    So don’t judge my skill level by these basic projects 😄🔥
+    I work across:
+    <br />
+    • Full-stack development (Frontend + Backend)<br />
+    • Android/Application dev<br />
+    • AI Assistants (like Rio 🤖)<br />
+    • Cybersecurity & automation<br />
+    • Reverse engineering & mod development<br />
+    • High-performance tools & systems<br /><br />
+    These public projects are just previews — my real work is far more <strong>advanced,
+    complex, and powerful</strong> 🚀
+    <br /><br />
+    <em className="text-white/70">
+      “If you want to see my real work — you’ll have to work with me, not just browse my portfolio 😉”
+    </em>
+  </p>
+</div>
+
+
       <div className="lg:mt-16 mt-8 lg:space-y-24 space-y-14 lg:pb-6 pb-3">
         {projects.map((project, index) => (
           <motion.div
