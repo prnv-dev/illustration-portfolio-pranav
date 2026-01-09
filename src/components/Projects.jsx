@@ -39,7 +39,7 @@ export default function Projects() {
 
 <div className="bg-black/10 border border-white/10 rounded-xl p-4 my-6 text-sm backdrop-blur-md">
   <p className="text-white/80 leading-relaxed">
-    <strong className="text-white">📌 Important Note — Please Read</strong><br /><br />
+    <strong className="text-white">📌 Important Note — Read</strong><br /><br />
     The projects shown here are just <strong>lightweight demo samples</strong> of my work.
     My real advanced projects — including security tools, automation systems, reverse-engineering
     utilities, AI integrations, custom bypass frameworks, and internal applications — are
@@ -57,9 +57,6 @@ export default function Projects() {
     These public projects are just previews — my real work is far more <strong>advanced,
     complex, and powerful</strong> 🚀
     <br /><br />
-    <em className="text-white/70">
-      “If you want to see my real work — you’ll have to work with me, not just browse my portfolio 😉”
-    </em>
   </p>
 </div>
 
